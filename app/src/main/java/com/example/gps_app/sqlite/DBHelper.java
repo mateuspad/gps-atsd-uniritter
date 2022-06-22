@@ -17,8 +17,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String stm = "CREATE TABLE localizations (id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                " lat REAL, lng REAL, time INTEGER, speed INTEGER, sent INTEGER)";
+        String stm = "CREATE TABLE localizations (id INTEGER PRIMARY KEY AUTOINCREMENT, user STRING," +
+                " lat REAL, lng REAL, time INTEGER, speed REAL, sent INTEGER)";
         sqLiteDatabase.execSQL(stm);
     }
 

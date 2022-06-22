@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LifecycleService;
 
 import com.example.gps_app.repositories.PosicaoRepository;
+import com.example.gps_app.views.GPSActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;

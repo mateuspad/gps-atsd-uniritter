@@ -16,9 +16,12 @@ public interface PositionDBServices {
     List<Localizacao> getAllLocalizacaoNaoEnviadas();
 
     class Localizacao {
+
         private long id;
+        private String user;
         private GeoPoint localizacao;
         private Date data;
+        private double speed;
         private boolean enviado;
 
         public Localizacao(GeoPoint localizacao) {
@@ -27,30 +30,29 @@ public interface PositionDBServices {
             this.id = this.data.getTime();
             this.enviado = false;
         }
-        public Localizacao(double lat, double lng, long time, boolean enviado) {
+
+        public Localizacao(long id, String user, double lat, double lng, long time, double speed, boolean enviado) {
+            this.id = id;
+            this.user = user;
             this.localizacao = new GeoPoint(lat, lng);
             this.data = new Date(time);
-            this.id = time;
+            this.speed = speed;
             this.enviado = enviado;
-        }
-        public long getId() {
-            return id;
-        }
-
-        public GeoPoint getLocalizacao() {
-            return localizacao;
-        }
-
-        public Date getData() {
-            return data;
         }
 
         public boolean isEnviado() {
             return enviado;
         }
 
-        public void setEnviado(boolean enviado) {
-            this.enviado = enviado;
+        @Override
+        public String toString() {
+            return "Localizacao:\n" +
+                    "id -> " + id +
+                    "\nuser -> " + user +
+                    "\nlocalizacao -> " + localizacao.getLatitude() + ", " + localizacao.getLongitude() +
+                    "\ndata -> " + data +
+                    "\nspeed -> " + speed +
+                    "\nenviado -> " + enviado;
         }
     }
 }

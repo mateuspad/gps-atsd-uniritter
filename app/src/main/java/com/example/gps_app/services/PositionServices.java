@@ -2,6 +2,7 @@ package com.example.gps_app.services;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.List;
@@ -32,6 +33,9 @@ public class PositionServices {
         //}
 
         if (dbLocal != null) {
+            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //    dbLocal.getAllLocalizacao().forEach(System.out::println);
+            //}
             dbLocal.salvar(localizacao);
         }
     }

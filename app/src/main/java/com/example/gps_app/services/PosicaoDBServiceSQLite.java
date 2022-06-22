@@ -8,13 +8,14 @@ import android.location.Location;
 import android.util.Log;
 
 import com.example.gps_app.sqlite.DBHelper;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PosicaoDBServiceSQLite implements PositionDBServices {
-
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DBHelper dbHelper;
 
     public PosicaoDBServiceSQLite(Context context) {
@@ -26,18 +27,33 @@ public class PosicaoDBServiceSQLite implements PositionDBServices {
         String dbName = "localizations";
         SQLiteDatabase writableDatabase = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put("user", mAuth.getUid());
         values.put("lat", location.getLatitude());
         values.put("lng", location.getLongitude());
-        values.put("time", 0);
+        values.put("time", location.getTime());
+        values.put("speed", location.getSpeed());
         values.put("sent", 0);
-        Log.d("SQLite DBService", "gravou");
-        Log.d("Tempo", "" + location.getTime());
         writableDatabase.insert(dbName, null, values);
     }
 
     @Override
     public List<Localizacao> getAllLocalizacao() {
-        return null;
+        SQLiteDatabase readableDatabase = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM localizations";
+        Cursor c = readableDatabase.rawQuery(selectQuery, null);
+
+        List<Localizacao> listLoc = new ArrayList<>();
+
+        boolean sent = false;
+        if(c.getColumnIndex("sent") == 1){
+            sent = true;
+        }
+
+        while(c.moveToNext()){
+            listLoc.add(new Localizacao(c.getLong(0), c.getString(1), c.getDouble(2), c.getDouble(3),
+                    c.getLong(4), c.getDouble(5), sent));
+        }
+        return listLoc;
     }
 
     @Override
@@ -47,7 +63,14 @@ public class PosicaoDBServiceSQLite implements PositionDBServices {
 
     @Override
     public List<Localizacao> getAllLocalizacaoNaoEnviadas() {
-        return null;
+        List<Localizacao> listLoc = getAllLocalizacao();
+        List<Localizacao> list = new ArrayList<>();
+        for(Localizacao l: listLoc){
+            if(!l.isEnviado()){
+                list.add(l);
+            }
+        }
+        return list;
     }
 }
 

@@ -15,11 +15,13 @@ public class PosicaoRepository {
     private static PosicaoRepository instance;
     private MutableLiveData<List<Location>> dados;
     private Context context;
+    private Location lastLocation;
 
     private PosicaoRepository(Context context){
         this.context = context;
         dados = new MutableLiveData<>();
         dados.setValue(new ArrayList<>());
+        createLastLocation();
     }
 
     public static PosicaoRepository getInstance(Context context) {
@@ -39,6 +41,7 @@ public class PosicaoRepository {
 
     public void incluir(Location location) {
         PositionServices.getInstance(context).gravar(location);
+        lastLocation = location;
         dados.getValue().add(location);
         dados.setValue(dados.getValue());
     }
@@ -46,5 +49,14 @@ public class PosicaoRepository {
     public Context getContext() {
         return this.context;
     }
-a
+
+    public Location getLastLocation() {
+        return lastLocation;
+    }
+
+    private void createLastLocation(){
+        lastLocation = new Location("");
+        lastLocation.setLatitude(0.0);
+        lastLocation.setLongitude(0.0);
+    }
 }
