@@ -11,11 +11,9 @@ public class PositionServices {
 
     private static PositionServices instance;
     private PositionDBServices dbLocal;
-    //private PositionDBServices dbRemoto;
     private Context context;
 
     private PositionServices(Context context) {
-        //dbRemoto = new PosicaoDBServiceFirebase();
         dbLocal = new PosicaoDBServiceSQLite(context);
         this.context = context;
     }
@@ -27,15 +25,12 @@ public class PositionServices {
         return instance;
     }
 
-    public void gravar(Location localizacao) {
-        //if (dbRemoto != null) {
-        //    dbRemoto.salvar(localizacao);
-        //}
+    public List<PositionDBServices.Localizacao> getUltimasLoc(){
+        return dbLocal.getUltimaPosUsuarios();
+    }
 
-        if (dbLocal != null) {
-            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            //    dbLocal.getAllLocalizacao().forEach(System.out::println);
-            //}
+    public void gravar(Location localizacao) {
+          if (dbLocal != null) {
             dbLocal.salvar(localizacao);
         }
     }

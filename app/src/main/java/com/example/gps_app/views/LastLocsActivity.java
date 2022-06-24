@@ -1,7 +1,5 @@
 package com.example.gps_app.views;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,25 +9,19 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.util.Log;
 import android.widget.Toast;
-
 
 import com.example.gps_app.R;
 import com.example.gps_app.repositories.PosicaoRepository;
-import com.example.gps_app.services.GPSService;
-import com.example.gps_app.services.PositionServices;
+import com.example.gps_app.services.PositionDBServices;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -37,16 +29,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GPSActivity extends AppCompatActivity implements OnMapReadyCallback {
-    public static final String TAG = "GPSActivity";
+import java.util.ArrayList;
+import java.util.List;
+
+public class LastLocsActivity extends AppCompatActivity implements OnMapReadyCallback {
     MapView mapView;
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gps);
-        mapView = findViewById(R.id.mapView);
+        setContentView(R.layout.activity_last_locs);
+        mapView = findViewById(R.id.mapView2);
 
         if (checkGooglePlayServices()) {
             mapView.getMapAsync(this);
@@ -54,8 +47,6 @@ public class GPSActivity extends AppCompatActivity implements OnMapReadyCallback
         } else {
             Toast.makeText(this, "Google Play Services not Avaliable", Toast.LENGTH_SHORT).show();
         }
-
-        Log.d(TAG, "onCreate");
     }
 
     private boolean checkGooglePlayServices() {
@@ -68,7 +59,7 @@ public class GPSActivity extends AppCompatActivity implements OnMapReadyCallback
             Dialog dialog = googleApiAvailability.getErrorDialog(this, result, 201, new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialogInterface) {
-                    Toast.makeText(GPSActivity.this, "User Canceled Dialog", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LastLocsActivity.this, "User Canceled Dialog", Toast.LENGTH_SHORT).show();
                 }
             });
             dialog.show();
@@ -76,6 +67,7 @@ public class GPSActivity extends AppCompatActivity implements OnMapReadyCallback
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -88,9 +80,11 @@ public class GPSActivity extends AppCompatActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
         }
         googleMap.setMyLocationEnabled(true);
-        LocationManager loc = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location location = loc.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
+        List<PositionDBServices.Localizacao> listLocs = PosicaoRepository.getInstance(this).getUltimasPosicoesDosUsuarios();
+
+        for(PositionDBServices.Localizacao loc: listLocs){
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLocalizacao().getLatitude(), loc.getLocalizacao().getLongitude())));
+        }
     }
 
     @Override

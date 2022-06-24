@@ -7,6 +7,7 @@ import com.google.firebase.firestore.GeoPoint;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public interface PositionDBServices {
 
@@ -14,6 +15,7 @@ public interface PositionDBServices {
     List<Localizacao> getAllLocalizacao();
     List<Localizacao> getAllLocalizacaoData(long inicio, long fim);
     List<Localizacao> getAllLocalizacaoNaoEnviadas();
+    List<Localizacao> getUltimaPosUsuarios();
 
     class Localizacao {
 
@@ -40,6 +42,18 @@ public interface PositionDBServices {
             this.enviado = enviado;
         }
 
+        public GeoPoint getLocalizacao() {
+            return localizacao;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public Date getData() {
+            return data;
+        }
+
         public boolean isEnviado() {
             return enviado;
         }
@@ -53,6 +67,19 @@ public interface PositionDBServices {
                     "\ndata -> " + data +
                     "\nspeed -> " + speed +
                     "\nenviado -> " + enviado;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Localizacao that = (Localizacao) o;
+            return Objects.equals(user, that.user);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(user);
         }
     }
 }

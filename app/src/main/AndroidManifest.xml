@@ -17,10 +17,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Gps_app">
+        <receiver
+            android:name=".broadcastreceiver.GPSBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <activity
+            android:name=".views.LastLocsActivity"
+            android:exported="false" />
+
         <service
             android:name=".services.GPSService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".views.MainActivity"

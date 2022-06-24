@@ -5,6 +5,7 @@ import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.gps_app.services.PositionDBServices;
 import com.example.gps_app.services.PositionServices;
 
 import java.util.ArrayList;
@@ -15,13 +16,11 @@ public class PosicaoRepository {
     private static PosicaoRepository instance;
     private MutableLiveData<List<Location>> dados;
     private Context context;
-    private Location lastLocation;
 
     private PosicaoRepository(Context context){
         this.context = context;
         dados = new MutableLiveData<>();
         dados.setValue(new ArrayList<>());
-        createLastLocation();
     }
 
     public static PosicaoRepository getInstance(Context context) {
@@ -41,22 +40,15 @@ public class PosicaoRepository {
 
     public void incluir(Location location) {
         PositionServices.getInstance(context).gravar(location);
-        lastLocation = location;
         dados.getValue().add(location);
         dados.setValue(dados.getValue());
     }
 
+    public List<PositionDBServices.Localizacao> getUltimasPosicoesDosUsuarios(){
+        return PositionServices.getInstance(context).getUltimasLoc();
+    }
+
     public Context getContext() {
         return this.context;
-    }
-
-    public Location getLastLocation() {
-        return lastLocation;
-    }
-
-    private void createLastLocation(){
-        lastLocation = new Location("");
-        lastLocation.setLatitude(0.0);
-        lastLocation.setLongitude(0.0);
     }
 }
